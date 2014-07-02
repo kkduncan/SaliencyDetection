@@ -1,0 +1,10 @@
+# Ignore all files ending with a tilde
+*~
+
+# Ignore certain folders
+Debug/
+Release/
+.settings/
+.svn/
+*.o
+
