@@ -6,10 +6,10 @@
 # University of South Florida
 
 # !!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!
-# The following variable must reflect the current location
-# of the 'image' directory on the server this code is
-# running on.
-IMAGE_DIR="$HOME/src/image";
+# The following variable must reflect the current absolute
+# location of the 'image' directory on the machine this code 
+# is running on.
+IMAGE_DIR="/home/carrt/workspace/SaliencyDetection/OldSaliencyDetection/image";
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 cd jpeg-8c/
