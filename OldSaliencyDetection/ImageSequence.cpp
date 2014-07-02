@@ -9,7 +9,11 @@
 
 ImageSequence::ImageSequence() {
 	numRows = numCols = numFrames = 0;
-	cacheSize = 0;
+	startFrameID = endFrameID = 0;
+	timeIndex = cacheSize = 0;
+	window = 0;
+	spatialMaskWidth = temporalMaskWidth = 0;
+	spatialSigma = temporalSigma = 1;
 	frameCache = NULL;
 	frameGradients = NULL;
 	spatialMask = NULL;

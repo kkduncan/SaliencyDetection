@@ -5,6 +5,13 @@
  *
  * This header file contains functions for performing Gaussian smoothing of an image
  *
+ *	DISCLAIMER:
+ *	==============================================================
+ *  This code was not designed well. It is not modular and doesn't
+ *  obey the Object Oriented Principles. Therefore it may contain
+ *  many bugs. Use at your own risk!
+ *  ==============================================================
+ *
  */
 
 #ifndef GAUSSIAN_FILTER_H_

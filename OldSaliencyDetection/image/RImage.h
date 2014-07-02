@@ -8,6 +8,13 @@
  *
  *  Created on: Dec 25, 2010
  *      Author: kesterduncan
+ *
+ *	DISCLAIMER:
+ *	==============================================================
+ *  This code was not designed well. It is not modular and doesn't
+ *  obey the Object Oriented Principles. Therefore it may contain
+ *  many bugs. Use at your own risk!
+ *  ==============================================================
  */
 
 #include <stdio.h>
@@ -21,6 +28,7 @@
 #ifndef RIMAGE_H_
 #define RIMAGE_H_
 
+/// Image channels
 #define RED 0
 #define GREEN 1
 #define BLUE 2
@@ -38,6 +46,7 @@ typedef enum {
 	BMP		/* Yet to be implemented */
 
 } ImageType;
+
 
 class RImage {
 private:

@@ -3,6 +3,13 @@
  *
  *  Created on: Jun 7, 2011
  *      Author: kesterduncan
+ *
+ *	DISCLAIMER:
+ *	==============================================================
+ *  This code was not designed well. It is not modular and doesn't
+ *  obey the Object Oriented Principles. Therefore it may contain
+ *  many bugs. Use at your own risk!
+ *  ==============================================================
  */
 
 #ifndef IMAGESEQUENCE_H_
@@ -10,7 +17,7 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <string.h>
+#include <cstring>
 
 #include "../image/RImage.h"
 

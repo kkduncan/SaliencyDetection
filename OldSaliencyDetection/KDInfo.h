@@ -7,6 +7,13 @@
  *      Author: kesterduncan
  *
  *  Copyright (c) 2010
+ *
+ *	DISCLAIMER:
+ *	==============================================================
+ *  This code was not designed well. It is not modular and doesn't
+ *  obey the Object Oriented Principles. Therefore it may contain
+ *  many bugs. Use at your own risk!
+ *  ==============================================================
  */
 
 #ifndef KDINFO_H_

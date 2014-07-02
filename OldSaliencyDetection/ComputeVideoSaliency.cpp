@@ -11,19 +11,30 @@
  *  Copyright (c) 2011 Kester Duncan
  *
  *  $Id: ComputeVideoSaliency$
+ *
+ *
+ *	DISCLAIMER:
+ *	==============================================================
+ *  This code was not designed well. It is not modular and doesn't
+ *  obey the Object Oriented Principles. Therefore it may contain
+ *  many bugs. Use at your own risk!
+ *  ==============================================================
+ *
  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
 #include "image/RImage.h"
-#include "gaussian/gaussian_filter.h"
+#include "gaussian_filter.h"
 #include "KDInfo.h"
-#include "sequences/ImageSequence.h"
-#include "utils/CommonUtils.h"
+#include "ImageSequence.h"
+#include "CommonUtils.h"
 
 #define LOG2(X) (log(X) / 0.30103)
 
+
+// TODO: remove global variables
 /** Global variables */
 int		numFrames;
 int		slabFrames = 5;			// number of frames in a slab of focus
@@ -52,6 +63,7 @@ void 			updateSaliencyMap();
 int 			inValidImageBounds(Location3D loc[4]);
 float 			calculateGradientAngle(ThreeDGradient a, ThreeDGradient b);
 
+
 using namespace std;
 
 int main(int argc, char *argv[]) {
@@ -70,7 +82,7 @@ int main(int argc, char *argv[]) {
 	if (argc != 5) {
 		usageMsg("./ComputeVideoSaliency [SEQUENCE_DIRECTORY] [START_FRAME_NUM] [END_FRAME_NUM] "
 				"[SAMPLING_PERCENTAGE]\n" \
-				"\te.g. ./ComputeVideoSaliency video_directory 001 012 25\n");
+				"\t e.g. ./ComputeVideoSaliency video_directory 001 012 25\n");
 	}
 
 	/* Mark the start time for all processing */
@@ -106,6 +118,7 @@ int main(int argc, char *argv[]) {
 		RImage orig;
 
 		infoMsg("[%d] - Evaluating the slab from %d to %d", count, slabStartFrame, slabEndFrame);
+		// TODO: remove global numFrames
 		numFrames = (slabEndFrame - slabStartFrame);
 
 		if (i == startFrameNum) {
@@ -209,6 +222,7 @@ void initializeProcess(char* directory, char* fileStem, int startFrameNum, int e
  * frameCacheSize has been set to a value greater than or equal to 3.
  */
 static void allocateMemory() {
+	// FIXME: should read in value of slabFrames
 	if (slabFrames >= 3) {
 		gradients = (ThreeDGradient**) calloc(slabFrames, sizeof(ThreeDGradient*));
 		magnitudes = (float**) calloc(slabFrames, sizeof(float*));
@@ -246,7 +260,9 @@ static void allocateMemory() {
  */
 static void readGradientsAndMagnitudes(const ImageSequence *sequence) {
 	/* Get the 3D Gradient vectors */
+	// FIXME: Should read in value of slabFrames
 	for (int k = 0; k < slabFrames; k++) {
+		// TODO: remove global numFrames
 		if (numFrames >= slabFrames) {
 			ThreeDGradient* grads = sequence->frameGradients[k];
 			for (int i = 0; i < height; i++) {

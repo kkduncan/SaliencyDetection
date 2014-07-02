@@ -5,6 +5,13 @@
  *      Author: kesterduncan
  *
  * 	Common utlity functions used for various miscellaneous tasks.
+ *
+ *	DISCLAIMER:
+ *	==============================================================
+ *  This code was not designed well. It is not modular and doesn't
+ *  obey the Object Oriented Principles. Therefore it may contain
+ *  many bugs. Use at your own risk!
+ *  ==============================================================
  */
 
 #ifndef COMMONUTILS_H_
