@@ -22,10 +22,20 @@ float *gradDirections;
 float *maxScaleEntropies;
 int *magnitudes;
 int *scaleSpaceValues;
-Image src;
-Image scale1, scale2, scale3, scale4, scale5, scale6, scale7;
+Image src, tgt;
+char *textFilename;
 
+/** Thread variables */
+typedef struct {
+	int id;
+	int rowStart;
+	int rowEnd;
+} ThreadInfo;
 
+static const int NUM_THREADS = 4;
+ThreadInfo threadInfo[NUM_THREADS];
+pthread_t threads[NUM_THREADS];
+pthread_mutex_t writeMutex = PTHREAD_MUTEX_INITIALIZER;
 
 /******************************** PROTOTYPES *********************************/
 void getWidthAndHeight(char *filename);
@@ -86,6 +96,18 @@ int main(int argc, char *argv[]) {
 		sprintf(str, "texts/%s_MAG.txt", outFileStem);
 		readMagnitudesFile(str);
 
+		sprintf(textFilename, "texts/%s_scale_space.txt", outFileStem);
+		if ((textFile = fopen(textFilename, "w")) == NULL) {
+			fprintf(stderr, "Cannot open text file %s for printing scale space values\n", textFilename);
+			exit(-1);
+		}
+
+		sprintf(entropyFilename, "texts/%s_scale_space_entropy.txt", outFileStem);
+		if ((entropyFile = fopen(entropyFilename, "w")) == NULL) {
+			fprintf(stderr, "Cannot open text file %s for printing scale space values\n", entropyFilename);
+			exit(-1);
+		}
+
 		/*
 		 * Initialize scale space and max scale entropies arrays
 		 */
@@ -105,10 +127,23 @@ int main(int argc, char *argv[]) {
 		srand(time(NULL));
 		int rowsPerThread = (int) ceil(height / NUM_THREADS);
 
-		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++) {
-				processScaleSpace(i, j);
-			}
+		int currRows = 0;
+		for (int i = 0; i < NUM_THREADS; i++) {
+			threadInfo[i].id = i + 1;
+			threadInfo[i].rowStart = currRows;
+			threadInfo[i].rowEnd = currRows + rowsPerThread;
+			currRows += rowsPerThread;
+
+			int returnVal = pthread_create(&threads[i], NULL, threadProcess, (void *) &threadInfo[i]);
+		}
+
+		for(int i=0; i < NUM_THREADS; i++) {
+			/*
+			 * Must ensure that the main thread waits for children, otherwise we may
+			 * run the risk of executing an exit which will terminate the process
+			 * and all its children.
+			 */
+			pthread_join(threads[i], NULL);
 		}
 
 		/*
@@ -192,7 +227,7 @@ void processScaleSpace(int x, int y) {
 	for (int i = 0; i < scaleSpace.NUM_SCALES; i++) {
 		int n = i^2;
 		int scale = (2 * n) + 1;
-		scaleSpace.scaleGroups[i].init(i + 1, scale, scale, 10, 5);
+		scaleSpace.scaleGroups[i].init(i + 1, scale, scale, 10);
 	}
 
 	/*
@@ -406,7 +441,7 @@ void processPixelForEntropy(Image& tgt, int x, int y, char *textFilename) {
 		previousEntropy = entropy;
 
 		/* Sanity check for unresolved bug */
-		(entropy < 0) ?	entropy = 0.999 : entropy = entropy;
+		if (entropy < 0) entropy = 0.999;
 		fprintf(textFile, "%2.6f\n", entropy);
 	}
 	fprintf(textFile, "Last window size - %d x %d\n", window - stepsize, window - stepsize);

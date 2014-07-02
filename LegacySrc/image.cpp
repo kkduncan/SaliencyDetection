@@ -327,7 +327,7 @@ void Image::flushMemory() {
 		}
 
 		if (IM_b != NULL) {
-			delete(IM_g);
+			delete(IM_b);
 		}
 	}
 
