@@ -1,0 +1,51 @@
+====================================================================
++ RELATIONAL ENTROPY-BASED SALIENCY DETECTION IN VIDEOS
++ K. Duncan, S. Sarkar
++
++ This code performs the video saliency detection routine outlined
++ in the 2012 IEEE Conference on Image Processing Paper entitled:
++ "Relational Entropy-based Saliency Detection in Images and Videos"
++
+====================================================================
+	DISCLAIMER:
+	===========
+	
+	THE CODE WRITTEN HERE IS JUST A RAPID PROTOTYPE THAT CONTAINS
+	BUGS, SEEN AND UNSEEN. PLEASE USE AT YOUR OWN RISK!!!
+	=============================================================
+	
+Building:
+	- Assumes a Linux-based / Mac OS. Would not work on Windows as is
+	STEPS:
+	o Run setupJPEG in the image directory first to build the jpeg 
+	  libraries required by the RImage class. You MUST adjust the
+	  $IMAGE variable so that it reflects the absolute path of the
+	  image directory on your system.
+	  
+	o Run make all...and that should be it
+	
+Using:
+	./ComputeVideoSaliency sequences/example 001 200 25
+		o 'sequences/example' is the path to the directory containing
+		  the extracted frames from the target video. The frames must
+		  be *.pgm format to work and the files should be named as
+		  frame_0001.pgm, frame_0002.pgm etc. (I know this is really
+		  specific and stupid but this is just the way it was 
+		  implemented in a hurry.)
+		  
+		o '001' - the frame to start processing from
+		
+		o '200' - the frame to stop at for processing
+		
+		o '25' - the pixel sampling percentage (would then be 25/100)
+		
+	Also, it is important to note that a 'results' folder should be 
+	created in the directory of the test sequence in order for the
+	composite saliency maps to be placed. Again, this is really 
+	specific and stupid, but that is how it was implemented.
+	
+	An example sequence entitled 'surfing' can be found in the 
+	sequences directory.
+	
+
+

@@ -118,25 +118,36 @@ int main(int argc, char *argv[]) {
 		RImage orig;
 
 		infoMsg("[%d] - Evaluating the slab from %d to %d", count, slabStartFrame, slabEndFrame);
-		// TODO: remove global numFrames
+
+		// FIXME: remove global numFrames
 		numFrames = (slabEndFrame - slabStartFrame);
 
+		/*
+		 * XXX
+		 * This is where the processing is done. Memory is allocated, the
+		 * frames are read, and their saliencies are calculated.
+		 */
 		if (i == startFrameNum) {
 			initializeProcess(sequenceDir, fileStem, slabStartFrame, slabEndFrame);
 		}
-		processVideo(slabStartFrame, slabEndFrame, percentage, sequenceDir, fileStem);
-		postProcessMap(15);
 
-		sprintf(mapFileName, "%s/results/%ssmap_%03d.ppm", sequenceDir, fileStem, count);
+		processVideo(slabStartFrame, slabEndFrame, percentage, sequenceDir, fileStem);
+		postProcessMap(10);
+
+		/*
+		 * XXX: Assumes that the results directory is already set up for output
+		 */
+		sprintf(mapFileName, "results/%ssmap_%03d.ppm", fileStem, count);
 
 
 		/*
-		 * Make composite map
+		 * Makes a composite map
 		 */
 		int midFrame = ((int)(slabStartFrame + (slabFrames / 2)));
 		if (midFrame > slabEndFrame || midFrame < slabStartFrame) {
 			midFrame = slabEndFrame;
 		}
+
 		sprintf(origName, "%s/%s%04d.pgm", sequenceDir, fileStem, midFrame);
 		orig.read(origName);
 		comp.isColorImage = 1;
@@ -150,18 +161,16 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-//		map.makeThermalColorImage();
-
 		// Saliency map results
 		for (int m=0; m < map.numRows; m++) {
 			for (int n=0; n < map.numCols; n++) {
 				int col = n + map.numCols;
-				double value = map(m, n, RED);
-				if (value > 128) {
-					comp(m, col, RED) = orig(m, n, RED);
-					comp(m, col, GREEN) = orig(m, n, RED);
-					comp(m, col, BLUE) = orig(m, n, RED);
-				}
+//				double value = map(m, n, RED);
+//				if (value > 128) {
+					comp(m, col, RED) = map(m, n, RED);
+					comp(m, col, GREEN) = map(m, n, RED);
+					comp(m, col, BLUE) = map(m, n, RED);
+//				}
 			}
 		}
 
@@ -207,6 +216,15 @@ void initializeProcess(char* directory, char* fileStem, int startFrameNum, int e
 	/* Get the frame width and height */
 	char frameName[50];
 
+	/**
+	 * XXX: Assumes that the frames follow the pgm format and are numbered
+	 * as follows:
+	 *
+	 * sequence/frame_0001.pgm
+	 * sequence/frame_0002.pgm
+	 * .
+	 * .
+	 */
 	sprintf(frameName, "%s/%s%04d.pgm", directory, fileStem, startFrameNum);
 	map.read(frameName);
 	width = map.numCols;
