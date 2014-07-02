@@ -34,7 +34,7 @@
 #define LOG2(X) (log(X) / 0.30103)
 
 
-// TODO: remove global variables
+// FIXME: remove global variables (poor design)
 /** Global variables */
 int		numFrames;
 int		slabFrames = 5;			// number of frames in a slab of focus
