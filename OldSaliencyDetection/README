@@ -39,10 +39,10 @@ Using:
 		
 		o '25' - the pixel sampling percentage (would then be 25/100)
 		
-	Also, it is important to note that a 'results' folder should be 
-	created in the directory of the test sequence in order for the
-	composite saliency maps to be placed. Again, this is really 
-	specific and stupid, but that is how it was implemented.
+	Also, it is important to note that all output goes to the 'results' 
+	folder in order for the composite saliency maps to be placed. 
+	Again, this is really specific and stupid, but that is how it 
+	was implemented at the time.
 	
 	An example sequence entitled 'surfing' can be found in the 
 	sequences directory.
