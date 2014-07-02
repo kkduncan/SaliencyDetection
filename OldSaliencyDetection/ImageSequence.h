@@ -19,7 +19,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "../image/RImage.h"
+#include "image/RImage.h"
 
 typedef struct gradient {
 	double delX;
