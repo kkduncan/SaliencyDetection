@@ -17,8 +17,8 @@
 #include <string.h>
 #include <time.h>
 #include "image/RImage.h"
-#include "gaussian/gaussian_filter.h"
-#include "edge/canny.h"
+#include "gaussian_filter.h"
+#include "canny.h"
 #include "KDInfo.h"
 
 #define LOG2(X) (log(X) / 0.30103)
