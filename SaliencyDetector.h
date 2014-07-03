@@ -287,7 +287,7 @@ private:
  * \brief Video saliency detector
  */
 class VideoSaliencyDetector : public SaliencyDetector {
-
+	// TODO: re-implement
 };
 
 
