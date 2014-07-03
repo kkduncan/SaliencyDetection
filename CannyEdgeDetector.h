@@ -23,7 +23,7 @@ namespace sal {
  */
 class CannyEdgeDetector {
 public:
-	CannyEdgeDetector(const float& sig = 1.20f);
+	explicit CannyEdgeDetector(const float& sig = 1.20f);
 	virtual ~CannyEdgeDetector();
 
 	/// Perform Canny edge detection on the given image

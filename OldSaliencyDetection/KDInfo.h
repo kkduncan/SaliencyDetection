@@ -19,6 +19,7 @@
 #ifndef KDINFO_H_
 #define KDINFO_H_
 
+#include <cstdlib>
 
 /*
  * Structure to store per pixel information required
