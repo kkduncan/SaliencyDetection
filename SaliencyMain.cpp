@@ -12,7 +12,7 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-	cv::Mat1f img = cv::imread("ads.ppm", CV_LOAD_IMAGE_GRAYSCALE);
+	cv::Mat1f img = cv::imread("bike.jpeg", CV_LOAD_IMAGE_GRAYSCALE);
 
 	if (img.empty()) {
 		cout << "No image loaded. Exiting.\n";
@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
 	cout << "Post-processing...\n";
 	detector.performPostProcessing();
 
-	cv::imwrite("TestSaliencyMapPost.jpg", detector.getSaliencyMap());
+	cv::imwrite("SaliencyTestOutput.jpg", detector.getSaliencyMap());
 
 
 	return 0;
