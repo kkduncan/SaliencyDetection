@@ -159,6 +159,9 @@ public:
 
 
 protected:
+	/// Used to handle special cases which can produce errors (such as numbers below 1e-15)
+	enum {ERROR_FLAG = -1};
+
 	/// Quantize the magnitude values in an effort to suppress lows and boost highs
 	virtual void quantizeMagnitudes() = 0;
 

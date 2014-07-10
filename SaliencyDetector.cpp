@@ -251,10 +251,10 @@ void ImageSaliencyDetector::updatePixelEntropy(KernelDensityInfo& kernelInfo) {
 
 		// Another special case: if the calculated values are -ve or NaNs
 		if (estimation <= 1e-15) {
-			kernelInfo.entropy = -1;
+			kernelInfo.entropy = ERROR_FLAG;
 
 		} else if (isnan(estimation)) {
-			kernelInfo.entropy = -1;
+			kernelInfo.entropy = ERROR_FLAG;
 
 		} else {
 			kernelInfo.entropy = -1.0f * log2f(estimation * estimation);
@@ -326,7 +326,7 @@ void ImageSaliencyDetector::updateSaliencyMap() {
 	 */
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
-			if (densityEstimates[i][j].entropy == -1) {
+			if (densityEstimates[i][j].entropy == ERROR_FLAG) {
 				densityEstimates[i][j].entropy = maxEntropy;
 			}
 
