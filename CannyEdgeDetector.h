@@ -6,7 +6,7 @@
  */
 
 #ifndef CANNYEDGEDETECTOR_H_
-#define CANNEDGEDETECTOR_H_
+#define CANNYEDGEDETECTOR_H_
 
 #include <opencv2/core/core.hpp>
 
