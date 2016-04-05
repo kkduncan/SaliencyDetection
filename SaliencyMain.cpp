@@ -7,7 +7,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include "SaliencyDetector.h"
-#include "CannyEdgeDetector.h"
+#include "EdgeDetector.h"
 
 using namespace std;
 
@@ -30,6 +30,10 @@ int main(int argc, char *argv[]) {
 
 	cv::imwrite("SaliencyTestOutput.jpg", detector.getSaliencyMap());
 
+	cout << "Done\n";
+
+	std::cin.get();
+	std::cin.get();
 
 	return 0;
 }

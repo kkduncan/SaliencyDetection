@@ -5,7 +5,7 @@
 #include <cassert>
 #include <ctime>
 #include <cmath>
-#include "CannyEdgeDetector.h"
+#include "EdgeDetector.h"
 #include "SaliencyDetector.h"
 
 
@@ -17,7 +17,7 @@ namespace sal {
 //////////////////////////////////////////////////////////////////////////////////////////
 
 void SaliencyDetector::postProcessSaliencyMap(cv::Mat1f& salMap, const float& sigma){
-	CannyEdgeDetector canny(sigma);
+	EdgeDetector edgeDetector(sigma);
 	cv::Mat1f filteredMap;
 
 	double minV = 1, maxV = 1;
@@ -26,7 +26,7 @@ void SaliencyDetector::postProcessSaliencyMap(cv::Mat1f& salMap, const float& si
 	/*
 	 * First smoothing operation
 	 */
-	canny.smoothImage(salMap, filteredMap);
+	edgeDetector.smoothImage(salMap, filteredMap);
 	filteredMap.copyTo(salMap);
 
 	/*
@@ -34,8 +34,8 @@ void SaliencyDetector::postProcessSaliencyMap(cv::Mat1f& salMap, const float& si
 	 * unsightly rings caused by the Gaussian
 	 */
 	filteredMap.release();
-	canny.setSigma(0.6f * sigma);
-	canny.smoothImage(salMap, filteredMap);
+	edgeDetector.setSigma(0.6f * sigma);
+	edgeDetector.smoothImage(salMap, filteredMap);
 	filteredMap.copyTo(salMap);
 
 	//  Normalization
@@ -46,7 +46,7 @@ void SaliencyDetector::postProcessSaliencyMap(cv::Mat1f& salMap, const float& si
 
 	for (int i = 0; i < salMap.rows; i++) {
 		for (int j = 0; j < salMap.cols; j++) {
-			salMap(i, j) = ((((salMap(i, j) - static_cast<float>(minVal)) / static_cast<float>(maxVal - minVal)) * 255.0));
+			salMap(i, j) = ((((salMap(i, j) - static_cast<float>(minVal)) / static_cast<float>(maxVal - minVal)) * 255.0f));
 		}
 	}
 }
@@ -103,13 +103,13 @@ void ImageSaliencyDetector::quantizeMagnitudes() {
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
 			if (magnitudes(i, j) >= 0 && magnitudes(i, j) < t1) {
-				magnitudes(i, j) = 0.05 * maxMag;
+				magnitudes(i, j) = 0.05f * maxMag;
 
 			} else if (magnitudes(i, j) >= t1 && magnitudes(i, j) < t2) {
-				magnitudes(i, j) = 0.25 * maxMag;
+				magnitudes(i, j) = 0.25f * maxMag;
 
 			} else if (magnitudes(i, j) >= t2 && magnitudes(i, j) < t3) {
-				magnitudes(i, j) = 0.75 * maxMag;
+				magnitudes(i, j) = 0.75f * maxMag;
 
 			} else if (magnitudes(i, j) >= t3){
 				magnitudes(i, j) = maxMag;
@@ -149,11 +149,11 @@ KernelDensityInfo ImageSaliencyDetector::calculateKernelSum(const std::vector<Lo
 	float sampleDistance2 = 0.f, sampleAngle2 = 0.f, sampleMag2 = 0.f;
 	float distanceKernel = 0.f, angleKernel = 0.f;
 	float binDimension = 10.f;
-	float distanceBinWidth = sqrt(pow(imgWidth, 2) + pow(imgHeight, 2)) / binDimension;
-	float angleBinWidth = 3.14159265358979323846 / binDimension;
+	float distanceBinWidth = sqrtf(powf(static_cast<float>(imgWidth), 2.0f) + powf(static_cast<float>(imgHeight), 2.0f)) / binDimension;
+	float angleBinWidth = 3.14159265358979323846f / binDimension;
 	//float twoPI = 6.283185307;
-	float dNorm = (2.5066 * distanceBinWidth);
-	float aNorm = (2.5066 * angleBinWidth);
+	float dNorm = (2.5066f * distanceBinWidth);
+	float aNorm = (2.5066f * angleBinWidth);
 
 	if (inValidImageBounds(samples)) {
 		Location2D first  = samples[0];
@@ -161,21 +161,21 @@ KernelDensityInfo ImageSaliencyDetector::calculateKernelSum(const std::vector<Lo
 		Location2D third  = samples[2];
 		Location2D fourth = samples[3];
 
-		sampleDistance1 = sqrt(pow((first.y - second.y), 2) + pow((first.x - second.x), 2));
-		sampleDistance2 = sqrt(pow((third.y - fourth.y), 2) + pow((third.x - fourth.x), 2));
+		sampleDistance1 = sqrtf(powf(static_cast<float>(first.y - second.y), 2.0f) + powf(static_cast<float>(first.x - second.x), 2.0f));
+		sampleDistance2 = sqrtf(powf(static_cast<float>(third.y - fourth.y), 2.0f) + powf(static_cast<float>(third.x - fourth.x), 2.0f));
 
 
-		sampleAngle1 = sqrt(pow(orientations(first.y, first.x) - orientations(second.y, second.x), 2));
-		sampleAngle2 = sqrt(pow(orientations(third.y, third.x) - orientations(fourth.y, fourth.x), 2));
+		sampleAngle1 = sqrtf(powf(orientations(first.y, first.x) - orientations(second.y, second.x), 2.0f));
+		sampleAngle2 = sqrtf(powf(orientations(third.y, third.x) - orientations(fourth.y, fourth.x), 2.0f));
 
-		sampleMag1   = sqrt(pow(magnitudes(first.y, first.x) - magnitudes(second.y, second.x), 2));
-		sampleMag2   = sqrt(pow(magnitudes(third.y, third.x) - magnitudes(fourth.y, fourth.x), 2));
+		sampleMag1   = sqrtf(powf(magnitudes(first.y, first.x) - magnitudes(second.y, second.x), 2.0f));
+		sampleMag2   = sqrtf(powf(magnitudes(third.y, third.x) - magnitudes(fourth.y, fourth.x), 2.0f));
 
 		kernelInfo.firstWeight  = sampleMag1;
 		kernelInfo.secondWeight = sampleMag2;
 
-		distanceKernel = (1.f / dNorm) * exp((pow(sampleDistance1 - sampleDistance2, 2) / (-2.f * pow(distanceBinWidth, 2))));
-		angleKernel    = (1.f / aNorm) * exp((pow(sampleAngle1 - sampleAngle2, 2) / (-2.f * pow(angleBinWidth, 2))));
+		distanceKernel = (1.f / dNorm) * expf((powf(sampleDistance1 - sampleDistance2, 2.0f) / (-2.f * powf(distanceBinWidth, 2.0f))));
+		angleKernel    = (1.f / aNorm) * expf((powf(sampleAngle1 - sampleAngle2, 2.0f) / (-2.f * powf(angleBinWidth, 2.0f))));
 
 		if (sampleMag1 > 0 && sampleMag2 > 0 && distanceKernel > 0 && angleKernel > 0) {
 			kernelInfo.kernelSum = (sampleMag1 * sampleMag2 * distanceKernel * angleKernel);
@@ -260,7 +260,6 @@ void ImageSaliencyDetector::updatePixelEntropy(KernelDensityInfo& kernelInfo) {
 			kernelInfo.entropy = -1.0f * log2f(estimation * estimation);
 
 		}
-
 
 	}
 
@@ -349,9 +348,9 @@ void ImageSaliencyDetector::updateSaliencyMap() {
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
 			if (maxEntropy > 0) {
-				saliencyMap(i, j) = (255.0 - ((densityEstimates[i][j].entropy / maxEntropy) * 255.0));
+				saliencyMap(i, j) = (255.0f - ((densityEstimates[i][j].entropy / maxEntropy) * 255.0f));
 			} else {
-				saliencyMap(i, j) = 0;
+				saliencyMap(i, j) = 0.f;
 			}
 		}
 	}
@@ -368,10 +367,10 @@ void ImageSaliencyDetector::compute() {
 		throw std::logic_error("ImageSaliencyDetector: Source image is empty!");
 	}
 
-	srand(time(NULL));
+	srand(static_cast<unsigned int>(time(NULL)));
 
 	// Get edge information
-	CannyEdgeDetector canny;
+	EdgeDetector canny;
 	canny.compute(srcImage);
 	setMagnitudes(canny.getGradMagnitudes());
 	setOrientations(canny.getGradOrientations());

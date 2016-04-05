@@ -5,14 +5,15 @@
  *      Author: carrt
  */
 
-#ifndef CANNYEDGEDETECTOR_H_
-#define CANNYEDGEDETECTOR_H_
+#ifndef SAL_EDGE_DETECTOR_H_
+#define SAL_EDGE_DETECTOR_H_
 
 #include <opencv2/core/core.hpp>
 
 
 /// Saliency Detection namespace
-namespace sal {
+namespace sal 
+{
 
 
 /*
@@ -21,17 +22,17 @@ namespace sal {
  * Acquires the gradient direction and gradient magnitudes values of an
  * input image provided via the compute function
  */
-class CannyEdgeDetector {
+class EdgeDetector 
+{
 public:
-	explicit CannyEdgeDetector(const float& sig = 1.20f);
-	virtual ~CannyEdgeDetector();
+	explicit EdgeDetector(const float& sig = 1.20f);
+	virtual ~EdgeDetector();
 
 	/// Perform Canny edge detection on the given image
 	void compute(const cv::Mat1f& src);
 
 	/// Smooth the input image and store the result in smoothedImg
 	void smoothImage(const cv::Mat1f& src, cv::Mat1f& smoothedImg);
-
 
 	/// Get sigma value
 	float getSigma() const {
@@ -77,7 +78,7 @@ private:
 	/// Calculate the angle of the vector represented by x and y
 	float calculateVectorAngle(const float& x, const float& y);
 
-
+private:
 	/// Standard deviation for the Gaussian smoothing filter
 	float sigma;
 
@@ -93,4 +94,4 @@ private:
 
 } /* namespace sal */
 
-#endif /* CANNYEDGEDETECTOR_H_ */
+#endif /* SAL_EDGE_DETECTOR_H_ */

@@ -1,15 +1,21 @@
 #include <cstdlib>
 #include <iostream>
 #include <cassert>
-#include "CannyEdgeDetector.h"
+#include <cmath>
+#include "EdgeDetector.h"
 
-namespace sal {
+#ifndef M_PI
+#	define M_PI 3.14159265358979323846f
+#endif
 
-CannyEdgeDetector::CannyEdgeDetector(const float& sig) {
+namespace sal 
+{
+
+EdgeDetector::EdgeDetector(const float& sig) {
 	if (sig > 0) {
 		this->sigma = sig;
 	} else {
-		this->sigma = 1.20; // Default
+		this->sigma = 1.20f; // Default
 	}
 
 	windowSize = static_cast<int> (1 + (2 * ceil(2.5 * sigma)));
@@ -17,12 +23,12 @@ CannyEdgeDetector::CannyEdgeDetector(const float& sig) {
 }
 
 
-CannyEdgeDetector::~CannyEdgeDetector() {
+EdgeDetector::~EdgeDetector() {
 
 }
 
 
-void CannyEdgeDetector::compute(const cv::Mat1f& src) {
+void EdgeDetector::compute(const cv::Mat1f& src) {
 	assert(!src.empty() && src.cols >= 3 && src.rows >= 3);
 
 	cv::Mat1f smoothedImg;
@@ -36,7 +42,7 @@ void CannyEdgeDetector::compute(const cv::Mat1f& src) {
 	/*
 	 * Compute the first derivative in the x and y directions
 	 */
-	calculateDerivatives(src, deltaX, deltaY);
+	calculateDerivatives(smoothedImg, deltaX, deltaY);
 
 	/*
 	 * Compute the direction of the gradient, in radians that
@@ -52,14 +58,14 @@ void CannyEdgeDetector::compute(const cv::Mat1f& src) {
 }
 
 
-void CannyEdgeDetector::smoothImage(const cv::Mat1f& src, cv::Mat1f& smoothedImg) {
+void EdgeDetector::smoothImage(const cv::Mat1f& src, cv::Mat1f& smoothedImg) {
 	assert(!src.empty() && src.cols >= 3 && src.rows >= 3);
 
 	cv::Mat1f tempSmoothedImg(src.rows, src.cols);
 	cv::Mat1f gaussianKernel(1, this->windowSize);
 
 	if (!smoothedImg.empty()) {
-		std::cout << "CannyEdgeDetector WARNING: Expected an empty matrix for [smoothedImg]\n";
+		std::cout << "EdgeDetector WARNING: Expected an empty matrix for [smoothedImg]\n";
 		std::cout << "\t... may have unexpected behavior!\n";
 	}
 
@@ -103,7 +109,7 @@ void CannyEdgeDetector::smoothImage(const cv::Mat1f& src, cv::Mat1f& smoothedImg
 			}
 
 			if (kernelWeightSum > 0) {
-				smoothedImg(r, c) = dotProdSum / kernelWeightSum + 0.5;
+				smoothedImg(r, c) = dotProdSum / kernelWeightSum + 0.5f;
 			} else {
 				smoothedImg(r, c) = dotProdSum;
 			}
@@ -112,7 +118,7 @@ void CannyEdgeDetector::smoothImage(const cv::Mat1f& src, cv::Mat1f& smoothedImg
 }
 
 
-void CannyEdgeDetector::createGaussianKernel(cv::Mat1f& kernel) {
+void EdgeDetector::createGaussianKernel(cv::Mat1f& kernel) {
 	float sum = 0.0f;
 	int windowCtr = static_cast<int> (windowSize / 2);
 
@@ -120,7 +126,7 @@ void CannyEdgeDetector::createGaussianKernel(cv::Mat1f& kernel) {
 
 	for (int i = 0; i < windowSize; i++) {
 		float loc = static_cast<float>(i - windowCtr);
-		float val = pow(2.71828, -0.5 * loc * loc / (sigma * sigma)) / (sigma * sqrt(6.2831853));
+		float val = powf(2.71828f, -0.5f * loc * loc / (sigma * sigma)) / (sigma * sqrt(6.2831853f));
 		kernel(0, i) = val;
 		sum += val;
 	}
@@ -133,7 +139,7 @@ void CannyEdgeDetector::createGaussianKernel(cv::Mat1f& kernel) {
 }
 
 
-void CannyEdgeDetector::calculateDerivatives(const cv::Mat1f& smoothedImg, cv::Mat1f& deltaX, cv::Mat1f& deltaY) {
+void EdgeDetector::calculateDerivatives(const cv::Mat1f& smoothedImg, cv::Mat1f& deltaX, cv::Mat1f& deltaY) {
 	deltaX.create(smoothedImg.rows, smoothedImg.cols);
 	deltaY.create(smoothedImg.rows, smoothedImg.cols);
 
@@ -170,7 +176,7 @@ void CannyEdgeDetector::calculateDerivatives(const cv::Mat1f& smoothedImg, cv::M
 }
 
 
-void CannyEdgeDetector::calculateGradientDirections(const cv::Mat1f& deltaX, const cv::Mat1f& deltaY) {
+void EdgeDetector::calculateGradientDirections(const cv::Mat1f& deltaX, const cv::Mat1f& deltaY) {
 	assert(deltaX.size == deltaY.size);
 	gradOrientations.create(deltaX.rows, deltaX.cols);
 
@@ -186,7 +192,7 @@ void CannyEdgeDetector::calculateGradientDirections(const cv::Mat1f& deltaX, con
 }
 
 
-void CannyEdgeDetector::calculateGradientMagnitudes(const cv::Mat1f& deltaX, const cv::Mat1f& deltaY) {
+void EdgeDetector::calculateGradientMagnitudes(const cv::Mat1f& deltaX, const cv::Mat1f& deltaY) {
 	assert(deltaX.size == deltaY.size);
 
 	gradMagnitudes.create(deltaX.rows, deltaX.cols);
@@ -201,7 +207,7 @@ void CannyEdgeDetector::calculateGradientMagnitudes(const cv::Mat1f& deltaX, con
 }
 
 
-float CannyEdgeDetector::calculateVectorAngle(const float& x, const float& y) {
+float EdgeDetector::calculateVectorAngle(const float& x, const float& y) {
 	float xu, yu, angle;
 
 	xu = fabs(x);
@@ -217,7 +223,7 @@ float CannyEdgeDetector::calculateVectorAngle(const float& x, const float& y) {
 		if (y >= 0) {
 			return (angle);
 		} else {
-			return (2 * M_PI - angle);
+			return (2.f * M_PI - angle);
 		}
 
 	} else {
