@@ -208,16 +208,20 @@ void EdgeDetector::calculateGradientMagnitudes(const cv::Mat1f& deltaX, const cv
 
 
 float EdgeDetector::calculateVectorAngle(const float& x, const float& y) {
-	float xu, yu, angle;
+	float xu = 0.f, yu = 0.f, angle = 0.f;
 
-	xu = fabs(x);
-	yu = fabs(y);
+// 	xu = fabs(x);
+// 	yu = fabs(y);
+
+	yu = sin(x - y);
+	xu = cos(x - y);
 
 	if ((xu == 0) && (yu == 0)) {
 		return (0.f);
 	}
 
-	angle = atan(yu / xu);
+	//angle = atan(yu / xu);
+	angle = atan2(yu, xu);
 
 	if (x >= 0) {
 		if (y >= 0) {

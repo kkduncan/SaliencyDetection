@@ -213,31 +213,31 @@ public:
 
 public:
 	void setMagnitudes(const cv::Mat1f& other) {
-		magnitudes = other;
+		mMagnitudes = other;
 	}
 
 	void setOrientations(const cv::Mat1f& other) {
-		orientations = other;
+		mOrientations = other;
 	}
 
 	void setSourceImage(const cv::Mat1f& theSrc) {
-		srcImage = theSrc;
+		mSrcImage = theSrc;
 	}
 
 	cv::Mat1f getMagnitudes() const {
-		return magnitudes;
+		return mMagnitudes;
 	}
 
 	cv::Mat1f getOrientations() const {
-		return orientations;
+		return mOrientations;
 	}
 
 	cv::Mat1f getSourceImage() const {
-		return srcImage;
+		return mSrcImage;
 	}
 
 	cv::Mat1f getSaliencyMap() const {
-		return saliencyMap;
+		return mSaliencyMap;
 	}
 
 
@@ -277,11 +277,11 @@ private:
 
 
 private:
-	cv::Mat1f magnitudes;
-	cv::Mat1f orientations;
-	cv::Mat1f srcImage;
-	cv::Mat1f saliencyMap;
-	std::vector< std::vector<KernelDensityInfo> > densityEstimates;
+	cv::Mat1f mMagnitudes;
+	cv::Mat1f mOrientations;
+	cv::Mat1f mSrcImage;
+	cv::Mat1f mSaliencyMap;
+	std::vector< std::vector<KernelDensityInfo> > mDensityEstimates;
 
 };
 

@@ -15,24 +15,24 @@ int main(int argc, char *argv[]) {
 	cv::Mat1f img = cv::imread("bike.jpeg", CV_LOAD_IMAGE_GRAYSCALE);
 
 	if (img.empty()) {
-		cout << "No image loaded. Exiting.\n";
+		cout << "No image loaded. Press any key to exit." << endl;
+		cin.get();
 		return (EXIT_FAILURE);
 	}
 
 	sal::ImageSaliencyDetector detector(img);
 	detector.setSamplingPercentage(0.10f);
 
-	cout << "Computing...\n";
+	cout << "Computing..." << endl;
 	detector.compute();
 
-	cout << "Post-processing...\n";
+	cout << "Post-processing..." << endl;
 	detector.performPostProcessing();
 
 	cv::imwrite("SaliencyTestOutput.jpg", detector.getSaliencyMap());
 
-	cout << "Done\n";
+	cout << "Done. Press any key to exit." << endl;
 
-	std::cin.get();
 	std::cin.get();
 
 	return 0;

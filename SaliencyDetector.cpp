@@ -63,9 +63,9 @@ ImageSaliencyDetector::ImageSaliencyDetector(const cv::Mat1f& src) {
 
 	setSourceImage(src);
 
-	densityEstimates.resize(srcImage.rows);
-	for (int i = 0; i < srcImage.rows; ++i) {
-		densityEstimates[i].resize(srcImage.cols);
+	mDensityEstimates.resize(mSrcImage.rows);
+	for (int i = 0; i < mSrcImage.rows; ++i) {
+		mDensityEstimates[i].resize(mSrcImage.cols);
 	}
 }
 
@@ -76,18 +76,18 @@ ImageSaliencyDetector::~ImageSaliencyDetector() {
 
 
 void ImageSaliencyDetector::quantizeMagnitudes() {
-	if (magnitudes.empty()) {
+	if (mMagnitudes.empty()) {
 		throw std::logic_error("ImageSaliencyDetector: There must be magnitudes info to process!");
 	}
 
-	int width = srcImage.cols;
-	int height = srcImage.rows;
+	int width = mSrcImage.cols;
+	int height = mSrcImage.rows;
 	float maxMag = FLT_MIN;
 
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
-			if (magnitudes(i, j) > maxMag) {
-				maxMag = magnitudes(i, j);
+			if (mMagnitudes(i, j) > maxMag) {
+				maxMag = mMagnitudes(i, j);
 			}
 		}
 	}
@@ -102,17 +102,17 @@ void ImageSaliencyDetector::quantizeMagnitudes() {
 	 */
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
-			if (magnitudes(i, j) >= 0 && magnitudes(i, j) < t1) {
-				magnitudes(i, j) = 0.05f * maxMag;
+			if (mMagnitudes(i, j) >= 0 && mMagnitudes(i, j) < t1) {
+				mMagnitudes(i, j) = 0.05f * maxMag;
 
-			} else if (magnitudes(i, j) >= t1 && magnitudes(i, j) < t2) {
-				magnitudes(i, j) = 0.25f * maxMag;
+			} else if (mMagnitudes(i, j) >= t1 && mMagnitudes(i, j) < t2) {
+				mMagnitudes(i, j) = 0.25f * maxMag;
 
-			} else if (magnitudes(i, j) >= t2 && magnitudes(i, j) < t3) {
-				magnitudes(i, j) = 0.75f * maxMag;
+			} else if (mMagnitudes(i, j) >= t2 && mMagnitudes(i, j) < t3) {
+				mMagnitudes(i, j) = 0.75f * maxMag;
 
-			} else if (magnitudes(i, j) >= t3){
-				magnitudes(i, j) = maxMag;
+			} else if (mMagnitudes(i, j) >= t3){
+				mMagnitudes(i, j) = maxMag;
 			}
 		}
 	}
@@ -120,12 +120,12 @@ void ImageSaliencyDetector::quantizeMagnitudes() {
 
 
 bool ImageSaliencyDetector::inValidImageBounds(const std::vector<Location2D>& samples) {
-	assert(!srcImage.empty());
+	assert(!mSrcImage.empty());
 	assert(samples.size() == 4);
 
 	bool isValid = true;
-	int height = srcImage.rows;
-	int width = srcImage.cols;
+	int height = mSrcImage.rows;
+	int width = mSrcImage.cols;
 
 	for (size_t i = 0; i < 4; ++i) {
 		if (samples[i].y < 0 || samples[i].y >= height || samples[i].x < 0 || samples[i].x >= width) {
@@ -138,13 +138,13 @@ bool ImageSaliencyDetector::inValidImageBounds(const std::vector<Location2D>& sa
 
 
 KernelDensityInfo ImageSaliencyDetector::calculateKernelSum(const std::vector<Location2D>& samples) {
-	assert(!srcImage.empty());
-	assert(!magnitudes.empty());
-	assert(!orientations.empty());
+	assert(!mSrcImage.empty());
+	assert(!mMagnitudes.empty());
+	assert(!mOrientations.empty());
 	assert(samples.size() == 4);
 
 	KernelDensityInfo kernelInfo;
-	int imgWidth = srcImage.cols, imgHeight = srcImage.rows;
+	int imgWidth = mSrcImage.cols, imgHeight = mSrcImage.rows;
 	float sampleDistance1 = 0.f, sampleAngle1 = 0.f, sampleMag1 = 0.f;
 	float sampleDistance2 = 0.f, sampleAngle2 = 0.f, sampleMag2 = 0.f;
 	float distanceKernel = 0.f, angleKernel = 0.f;
@@ -165,11 +165,11 @@ KernelDensityInfo ImageSaliencyDetector::calculateKernelSum(const std::vector<Lo
 		sampleDistance2 = sqrtf(powf(static_cast<float>(third.y - fourth.y), 2.0f) + powf(static_cast<float>(third.x - fourth.x), 2.0f));
 
 
-		sampleAngle1 = sqrtf(powf(orientations(first.y, first.x) - orientations(second.y, second.x), 2.0f));
-		sampleAngle2 = sqrtf(powf(orientations(third.y, third.x) - orientations(fourth.y, fourth.x), 2.0f));
+		sampleAngle1 = sqrtf(powf(mOrientations(first.y, first.x) - mOrientations(second.y, second.x), 2.0f));
+		sampleAngle2 = sqrtf(powf(mOrientations(third.y, third.x) - mOrientations(fourth.y, fourth.x), 2.0f));
 
-		sampleMag1   = sqrtf(powf(magnitudes(first.y, first.x) - magnitudes(second.y, second.x), 2.0f));
-		sampleMag2   = sqrtf(powf(magnitudes(third.y, third.x) - magnitudes(fourth.y, fourth.x), 2.0f));
+		sampleMag1   = sqrtf(powf(mMagnitudes(first.y, first.x) - mMagnitudes(second.y, second.x), 2.0f));
+		sampleMag2   = sqrtf(powf(mMagnitudes(third.y, third.x) - mMagnitudes(fourth.y, fourth.x), 2.0f));
 
 		kernelInfo.firstWeight  = sampleMag1;
 		kernelInfo.secondWeight = sampleMag2;
@@ -267,28 +267,28 @@ void ImageSaliencyDetector::updatePixelEntropy(KernelDensityInfo& kernelInfo) {
 
 
 void ImageSaliencyDetector::updateApplicableRegion(const BoundingBox2D& bounds, const KernelDensityInfo& kernelSum) {
-	assert(!densityEstimates.empty());
-	assert(!densityEstimates[0].empty());
+	assert(!mDensityEstimates.empty());
+	assert(!mDensityEstimates[0].empty());
 
 	int sampleCountLimit = (2 * neighborhoodSize - 1) * (2 * neighborhoodSize - 1);
-	int width = srcImage.cols;
-	int height = srcImage.rows;
+	int width = mSrcImage.cols;
+	int height = mSrcImage.rows;
 
 	for (int i = bounds.topLeft.y; i <= bounds.botLeft.y; i++) {
 		for (int j = bounds.topLeft.x; j <= bounds.topRight.x; j++) {
 
 			if (i >= 0 && i < height && j >= 0 && j < width) {
-				if (densityEstimates[i][j].sampleCount < sampleCountLimit) {
-					densityEstimates[i][j].kernelSum += kernelSum.kernelSum;
-					densityEstimates[i][j].firstWeight += kernelSum.firstWeight;
-					densityEstimates[i][j].secondWeight += kernelSum.secondWeight;
-					densityEstimates[i][j].sampleCount++;
+				if (mDensityEstimates[i][j].sampleCount < sampleCountLimit) {
+					mDensityEstimates[i][j].kernelSum += kernelSum.kernelSum;
+					mDensityEstimates[i][j].firstWeight += kernelSum.firstWeight;
+					mDensityEstimates[i][j].secondWeight += kernelSum.secondWeight;
+					mDensityEstimates[i][j].sampleCount++;
 
 					/*
 					 * Update the pixel entropy every N (= 32) iterations
 					 */
-					if (((densityEstimates[i][j].sampleCount + 1) % 32) == 0) {
-						updatePixelEntropy(densityEstimates[i][j]);
+					if (((mDensityEstimates[i][j].sampleCount + 1) % 32) == 0) {
+						updatePixelEntropy(mDensityEstimates[i][j]);
 					}
 				}
 			}
@@ -298,11 +298,11 @@ void ImageSaliencyDetector::updateApplicableRegion(const BoundingBox2D& bounds, 
 
 
 void ImageSaliencyDetector::updateSaliencyMap() {
-	int width = srcImage.cols;
-	int height = srcImage.rows;
+	int width = mSrcImage.cols;
+	int height = mSrcImage.rows;
 
 	// Initialize saliency map
-	saliencyMap.create(height, width);
+	mSaliencyMap.create(height, width);
 
 	// For proper visualization
 	float maxEntropy = -999;
@@ -310,8 +310,8 @@ void ImageSaliencyDetector::updateSaliencyMap() {
 
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
-			if (densityEstimates[i][j].entropy > maxEntropy) {
-				maxEntropy = densityEstimates[i][j].entropy;
+			if (mDensityEstimates[i][j].entropy > maxEntropy) {
+				maxEntropy = mDensityEstimates[i][j].entropy;
 			}
 		}
 	}
@@ -325,12 +325,12 @@ void ImageSaliencyDetector::updateSaliencyMap() {
 	 */
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
-			if (densityEstimates[i][j].entropy == ERROR_FLAG) {
-				densityEstimates[i][j].entropy = maxEntropy;
+			if (mDensityEstimates[i][j].entropy == ERROR_FLAG) {
+				mDensityEstimates[i][j].entropy = maxEntropy;
 			}
 
-			if (densityEstimates[i][j].entropy < minEntropy) {
-				minEntropy = densityEstimates[i][j].entropy;
+			if (mDensityEstimates[i][j].entropy < minEntropy) {
+				minEntropy = mDensityEstimates[i][j].entropy;
 			}
 		}
 	}
@@ -338,7 +338,7 @@ void ImageSaliencyDetector::updateSaliencyMap() {
 	// Shift values so that the minimum entropy value is 0
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
-			densityEstimates[i][j].entropy -= minEntropy;
+			mDensityEstimates[i][j].entropy -= minEntropy;
 		}
 	}
 
@@ -348,9 +348,9 @@ void ImageSaliencyDetector::updateSaliencyMap() {
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
 			if (maxEntropy > 0) {
-				saliencyMap(i, j) = (255.0f - ((densityEstimates[i][j].entropy / maxEntropy) * 255.0f));
+				mSaliencyMap(i, j) = (255.0f - ((mDensityEstimates[i][j].entropy / maxEntropy) * 255.0f));
 			} else {
-				saliencyMap(i, j) = 0.f;
+				mSaliencyMap(i, j) = 0.f;
 			}
 		}
 	}
@@ -358,12 +358,12 @@ void ImageSaliencyDetector::updateSaliencyMap() {
 
 
 void ImageSaliencyDetector::performPostProcessing() {
-	postProcessSaliencyMap(this->saliencyMap);
+	postProcessSaliencyMap(this->mSaliencyMap);
 }
 
 
 void ImageSaliencyDetector::compute() {
-	if (srcImage.empty()) {
+	if (mSrcImage.empty()) {
 		throw std::logic_error("ImageSaliencyDetector: Source image is empty!");
 	}
 
@@ -371,7 +371,7 @@ void ImageSaliencyDetector::compute() {
 
 	// Get edge information
 	EdgeDetector canny;
-	canny.compute(srcImage);
+	canny.compute(mSrcImage);
 	setMagnitudes(canny.getGradMagnitudes());
 	setOrientations(canny.getGradOrientations());
 
@@ -381,9 +381,9 @@ void ImageSaliencyDetector::compute() {
 	// Perform iterative saliency detection mechanism
 	int squaredNHood = neighborhoodSize * neighborhoodSize;
 	int halfNHood = neighborhoodSize / 2;
-	int reqNumSamples = static_cast<int>(samplingPercentage * (srcImage.cols * srcImage.rows * squaredNHood));
-	int imageHeight = srcImage.rows;
-	int imageWidth = srcImage.cols;
+	int reqNumSamples = static_cast<int>(samplingPercentage * (mSrcImage.cols * mSrcImage.rows * squaredNHood));
+	int imageHeight = mSrcImage.rows;
+	int imageWidth = mSrcImage.cols;
 	int counter = 0;
 
 	while (counter < reqNumSamples) {
