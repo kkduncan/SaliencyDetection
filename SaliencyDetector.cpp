@@ -190,7 +190,7 @@ KernelDensityInfo ImageSaliencyDetector::calculateKernelSum(const std::vector<Lo
 
 BoundingBox2D ImageSaliencyDetector::getApplicableBounds(const std::vector<Location2D>& samples) {
 	BoundingBox2D bounds;
-	int L = neighborhoodSize;
+	int L = mNeighborhoodSize;
 	int maxX = samples[0].x;
 	int minX = samples[0].x;
 	int maxY = samples[0].y;
@@ -270,7 +270,7 @@ void ImageSaliencyDetector::updateApplicableRegion(const BoundingBox2D& bounds, 
 	assert(!mDensityEstimates.empty());
 	assert(!mDensityEstimates[0].empty());
 
-	int sampleCountLimit = (2 * neighborhoodSize - 1) * (2 * neighborhoodSize - 1);
+	int sampleCountLimit = (2 * mNeighborhoodSize - 1) * (2 * mNeighborhoodSize - 1);
 	int width = mSrcImage.cols;
 	int height = mSrcImage.rows;
 
@@ -379,9 +379,9 @@ void ImageSaliencyDetector::compute() {
 	quantizeMagnitudes();
 
 	// Perform iterative saliency detection mechanism
-	int squaredNHood = neighborhoodSize * neighborhoodSize;
-	int halfNHood = neighborhoodSize / 2;
-	int reqNumSamples = static_cast<int>(samplingPercentage * (mSrcImage.cols * mSrcImage.rows * squaredNHood));
+	int squaredNHood = mNeighborhoodSize * mNeighborhoodSize;
+	int halfNHood = mNeighborhoodSize / 2;
+	int reqNumSamples = static_cast<int>(mSamplingPercentage * (mSrcImage.cols * mSrcImage.rows * squaredNHood));
 	int imageHeight = mSrcImage.rows;
 	int imageWidth = mSrcImage.cols;
 	int counter = 0;
@@ -396,14 +396,14 @@ void ImageSaliencyDetector::compute() {
 		samples[0].x = rand() % imageWidth;
 
 		// The other 3 samples MUST be selected in the neighborhood of the first
-		samples[1].y = (rand() % neighborhoodSize) + (samples[0].y - halfNHood);
-		samples[1].x = (rand() % neighborhoodSize) + (samples[0].x - halfNHood);
+		samples[1].y = (rand() % mNeighborhoodSize) + (samples[0].y - halfNHood);
+		samples[1].x = (rand() % mNeighborhoodSize) + (samples[0].x - halfNHood);
 
-		samples[2].y = (rand() % neighborhoodSize) + (samples[0].y - halfNHood);
-		samples[2].x = (rand() % neighborhoodSize) + (samples[0].x - halfNHood);
+		samples[2].y = (rand() % mNeighborhoodSize) + (samples[0].y - halfNHood);
+		samples[2].x = (rand() % mNeighborhoodSize) + (samples[0].x - halfNHood);
 
-		samples[3].y = (rand() % neighborhoodSize) + (samples[0].y - halfNHood);
-		samples[3].x = (rand() % neighborhoodSize) + (samples[0].x - halfNHood);
+		samples[3].y = (rand() % mNeighborhoodSize) + (samples[0].y - halfNHood);
+		samples[3].x = (rand() % mNeighborhoodSize) + (samples[0].x - halfNHood);
 
 		kernelSum = calculateKernelSum(samples);
 		bounds = getApplicableBounds(samples);

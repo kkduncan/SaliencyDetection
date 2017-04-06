@@ -26,12 +26,12 @@ SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
 # Required Original Headers and Sources #
 #=======================================#
 set(SAL_INC
-	${CMAKE_CURRENT_SOURCE_DIR}/CannyEdgeDetector.h
+	${CMAKE_CURRENT_SOURCE_DIR}/EdgeDetector.h
 	${CMAKE_CURRENT_SOURCE_DIR}/SaliencyDetector.h	
 )
 
 set(SAL_IMPL	
-	${CMAKE_CURRENT_SOURCE_DIR}/CannyEdgeDetector.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/EdgeDetector.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/SaliencyDetector.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/SaliencyMain.cpp
 )

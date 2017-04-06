@@ -135,26 +135,26 @@ public:
 
 
 public:
-	SaliencyDetector() : samplingPercentage(0.25f), neighborhoodSize(5) { };
+	SaliencyDetector() : mSamplingPercentage(0.25f), mNeighborhoodSize(5) { };
 	virtual ~SaliencyDetector() { };
 
 	/// Compute the saliency of an image or a 3D volume of frames
 	virtual void compute() = 0;
 
 	void setSamplingPercentage(const float& p) {
-		if (p > 0) samplingPercentage = p;
+		if (p > 0) mSamplingPercentage = p;
 	}
 
 	void setNeighborhoodSize(const int& m) {
-		if (m > 0) neighborhoodSize = m;
+		if (m > 0) mNeighborhoodSize = m;
 	}
 
 	float getSamplingPercentage() const {
-		return samplingPercentage;
+		return mSamplingPercentage;
 	}
 
 	int getNeighborhoodSize() const {
-		return neighborhoodSize;
+		return mNeighborhoodSize;
 	}
 
 
@@ -169,10 +169,10 @@ protected:
 	void postProcessSaliencyMap(cv::Mat1f& salMap, const float& sigma = 18.0f);
 
 	/// Percentage of image / frame pixels to use for calculations
-	float samplingPercentage;
+	float mSamplingPercentage;
 
 	/// Size of one dimension of the pixel neighborhood
-	int neighborhoodSize;
+	int mNeighborhoodSize;
 };
 
 

@@ -11,29 +11,57 @@
 
 using namespace std;
 
-int main(int argc, char *argv[]) {
-	cv::Mat1f img = cv::imread("bike.jpeg", CV_LOAD_IMAGE_GRAYSCALE);
+int main(int argc, char *argv[]) 
+{
+	try
+	{
+		if (argc == 2)
+		{
+			std::string imgName(argv[1]);
+			if (!imgName.empty())
+			{
+				cv::Mat1f img = cv::imread(imgName, CV_LOAD_IMAGE_GRAYSCALE);
+				std::string outputName(imgName);
+				outputName.append("_SAL.png");
 
-	if (img.empty()) {
-		cout << "No image loaded. Press any key to exit." << endl;
-		cin.get();
-		return (EXIT_FAILURE);
+				if (img.empty()) 
+				{
+					cout << "Error: No image loaded. Press any key to exit." << endl;
+					cin.get();
+					return (EXIT_FAILURE);
+				}
+
+				sal::ImageSaliencyDetector detector(img);
+				detector.setSamplingPercentage(0.25f);
+				detector.setNeighborhoodSize(5);
+				
+				cout << "Computing..." << endl;
+				detector.compute();
+
+				cout << "Post-processing..." << endl;
+				//detector.performPostProcessing();
+
+				cv::imwrite(outputName, detector.getSaliencyMap());
+				cout << "Output written to --> [ " << outputName << " ]" << std::endl;
+			}
+		}
+		else
+		{
+			cout << "Error: No image provided.\n";
+			cout << "Usage: ./SaliencyDetector.exe [IMAGE_PATH]\n";
+		}
+	}
+	catch (const std::exception &ex)
+	{
+		cout << "Error: An unexpected error occurred during detection: " << ex.what() << endl;		
+	}
+	catch (...)
+	{
+		cout << "Error: An unknown error occurred during detection.\n";
 	}
 
-	sal::ImageSaliencyDetector detector(img);
-	detector.setSamplingPercentage(0.10f);
-
-	cout << "Computing..." << endl;
-	detector.compute();
-
-	cout << "Post-processing..." << endl;
-	detector.performPostProcessing();
-
-	cv::imwrite("SaliencyTestOutput.jpg", detector.getSaliencyMap());
-
-	cout << "Done. Press any key to exit." << endl;
-
-	std::cin.get();
+	//cout << "Done. Press any key to exit." << endl;
+	//std::cin.get();
 
 	return 0;
 }

@@ -184,9 +184,7 @@ void EdgeDetector::calculateGradientDirections(const cv::Mat1f& deltaX, const cv
 		for (int c = 0; c < deltaY.cols; c++) {
 			float dx = deltaX(r, c);
 			float dy = -deltaY(r, c);
-
 			gradOrientations(r, c) = calculateVectorAngle(dx, dy);
-
 		}
 	}
 }
@@ -209,10 +207,6 @@ void EdgeDetector::calculateGradientMagnitudes(const cv::Mat1f& deltaX, const cv
 
 float EdgeDetector::calculateVectorAngle(const float& x, const float& y) {
 	float xu = 0.f, yu = 0.f, angle = 0.f;
-
-// 	xu = fabs(x);
-// 	yu = fabs(y);
-
 	yu = sin(x - y);
 	xu = cos(x - y);
 
@@ -220,7 +214,6 @@ float EdgeDetector::calculateVectorAngle(const float& x, const float& y) {
 		return (0.f);
 	}
 
-	//angle = atan(yu / xu);
 	angle = atan2(yu, xu);
 
 	if (x >= 0) {
